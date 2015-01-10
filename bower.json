@@ -1,0 +1,25 @@
+{
+  "name": "brahma.scroll",
+  "version": "0.2.0",
+  "authors": [
+    "Morulus <vladimirmorulus@gmail.com>"
+  ],
+  "description": "Plugin for jQuery/Brahma for making custom scrollbar",
+  "main": [
+    "brahma.scroll.js"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "brahmajs",
+    "scroll",
+    "plugin"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/morulus/brahma.scroll",
+  "dependencies": {
+    "brahma": ">=1.2.0",
+    "jquery": ">=1.8.1"
+  }
+}
