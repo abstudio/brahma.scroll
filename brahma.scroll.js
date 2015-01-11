@@ -9,21 +9,29 @@
 			'runnerColor': '#626262',
 			'runnerHeight': 8,
 			'wheelStep': 40,
-			'runnerDefaultPosition': 0
+			'runnerDefaultPosition': 0,
+			cssTransitions: true,
+			layout: 'outer',
+			outerClass: false,
+			innerClass: false
 		}, settings);
 		
-		this.options = {};
-		this.options.draggerActivate = false; 		this.options.dreggerDownPos = 0; 		this.options.currenPositionPx = 0; 		
-		this.options.runner = {
-			height: 6
+		this.options = {
+			draggerActivate: false,
+			dreggerDownPos: 0,
+			currenPositionPx: 0,
+			runner: {
+				height: 6
+			},
+			crossline: {
+				runnerarea: 0
+			},
+			disabled: false,
+			needtodisable: false,
+			needtoenabled: false,
+			areaHeight: 0
 		};
-		this.options.crossline = {
-			runnerarea: 0
-		};
-		this.options.disabled = false; 		this.options.needtodisable = false;
-		this.options.needtoenabled = false;
-		this.options.areaHeight = 0;
-		this.options.cssTransitions = true;
+		
 		
 				if(!document.addEventListener) {
 			
@@ -34,15 +42,14 @@
 		this.content = this.obj;
 		
 		this.build = function() {
-						this.wrappers.main = $(this.obj).wrap($("<div />", {
+			this.wrappers.main = $(this.obj).wrap($("<div />", {
 				'class': 'jair-ui-scroll-root'
 			}).css({
-				
 				'display': 'table',
 				'position': 'relative'
 			})).parent();
 			
-						this.wrappers.marginableElement = $(this.obj).css({
+			this.wrappers.marginableElement = $(this.obj).css({
 				'float': 'left',
 				'width': this.options.areaWidth
 			});
@@ -58,20 +65,31 @@
 				'overflow': 'hidden',
 				'height': this.options.areaHeight+'px'
 			}));
-			
-			$(this.obj).css({
-				'height': 'auto'
-			});
-			
-			
+
 			$(this.wrappers.main).css({
 				'padding-right': '+10px',
 				'overflow': 'visible',
-				'background': 'transparent',
-				'border': '0px',
-				'margin': '0px',
 				'position': ( ($(this.obj).css('position')=='absolute' || $(this.obj).css('position')=='fixed' ) ? $(this.obj).css('position') : 'relative')
 			}).disableselection();
+
+			if (this.settings.layout==='inner') {
+				$(this.wrappers.main).addClass($(this.obj)[0].className);
+				$(this.obj).removeClass();
+			};
+
+			// Add outer class id exists
+			if (this.settings.outerClass) {
+				$(this.wrappers.main).addClass(this.settings.outerClass);
+			}
+
+			// Add innerClass if exists
+			if (this.settings.innerClass) {
+				$(this.wrappers.clipWrapper).addClass(this.settings.innerClass);
+			}
+
+			$(this.obj).css({
+				'height': 'auto'
+			});
 			
 			
 			this.wrappers.s_wrappar = $("<div />", {
@@ -188,8 +206,9 @@
 			this.setPosition(0);
 			this.options.needtodisable = false;
 			this.options.disabled = true;
-			
 			$(this.wrappers.s_runner).hide();
+
+
 		};
 		
 		this.enable = function() {
@@ -199,8 +218,7 @@
 			$(this.wrappers.s_runner).show();
 		}
 		
-				this.refresh = function() {
-			
+		this.refresh = function() {
 			this.calculates();
 		};
 		
@@ -241,12 +259,18 @@
 		
 		this.addeventes = function() {
 			var that = this;
+			this.watcher = Brahma.module({})
+			.bind('window.resize', function() {
+				that.refresh();
+			});
 			
 			Brahma(this.wrappers.clipWrapper).component('wheel', {
 				wheelUp: function() {
+					
 					that.scrollUp();
 				},
 				wheelDown: function() {
+					
 					that.scrollDown();
 				}
 			});
@@ -260,6 +284,7 @@
 				}
 				return false;
 			});
+
 			$('body').bind('mouseup', function(eventObject) {
 				if (this.disabled) return;
 				if (that.options.draggerActivate) {
@@ -300,6 +325,8 @@
 				return false;
 				
 			});
+
+			Brahma.document.translateEvents(this.watcher, 'window.resize');
 		};
 				
 		this.setPosition = function(perc, animate) {
@@ -325,7 +352,7 @@
 			if (this.options.currentPosition<0) this.options.currentPosition = 0;
 			
 			
-			if (animate && !this.options.cssTransitions) {
+			if (animate && !this.settings.cssTransitions) {
 				console.log('animate', this.options.crossline.runnerarea*this.options.currentPosition);
 				$(this.wrappers.s_runner).animate({
 					'top': (this.options.crossline.runnerarea*this.options.currentPosition)+'px'
@@ -438,6 +465,7 @@
 
     	},
     	execute: function() {
+
     		$(this.selector).BrahmaScroll(this.config);
     	}
     })
